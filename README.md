@@ -1,6 +1,22 @@
-# 🎯 PocketFM Product Insights Copilot Terminal
+# 🎯 Product Insights Copilot Terminal
 
 An advanced, responsive, and decision-driven product analytics dashboard built to monitor, model, and optimize user retention, coin-monetization pricing, release schedules, and audio playback latency profiles.
+
+---
+
+## 📸 Screenshots
+
+### Executive Dashboard
+![Executive Dashboard](/public/screenshots/dashboard.png)
+
+### Retention Curves & Cohort Heatmap
+![Retention Analytics](/public/screenshots/retention.png)
+
+### Audience Listening DNA & Crossovers
+![Audience DNA](/public/screenshots/audience.png)
+
+### Decision Support Tools
+![Decision Tools](/public/screenshots/optimization.png)
 
 ---
 
@@ -34,8 +50,8 @@ Decision-support modeling to forecast changes in product pricing and push delive
 
 ## 🛠️ Playback Buffer & Network Diagnostics
 Visual correlation metrics highlighting how playback buffering directly drives Day 1 uninstalls.
-*   **Bitrate Mode Simulator**: Model switching streams from standard 128kbps to low-data 64kbps HE-AAC to reduce buffering ratios and improve rural network retention.
-*   **Regional Anomalies List**: Operator scope flags identifying latency spikes across Indian network circles (like Bihar/Jharkhand or UP East).
+*   **Bitrate Mode Simulator**: Model switching streams from standard 128kbps to optimized 64kbps HE-AAC to reduce buffering ratios and improve rural network retention.
+*   **Regional Anomalies List**: Operator scope flags identifying latency spikes across network circles.
 
 ---
 
