@@ -1,0 +1,42 @@
+[
+  {
+    "week_start": "2018-10-01",
+    "active": 162,
+    "retention_pct": 76.5
+  },
+  {
+    "week_start": "2018-10-08",
+    "active": 157,
+    "retention_pct": 79.0
+  },
+  {
+    "week_start": "2018-10-15",
+    "active": 157,
+    "retention_pct": 70.7
+  },
+  {
+    "week_start": "2018-10-22",
+    "active": 137,
+    "retention_pct": 78.1
+  },
+  {
+    "week_start": "2018-10-29",
+    "active": 144,
+    "retention_pct": 74.3
+  },
+  {
+    "week_start": "2018-11-05",
+    "active": 132,
+    "retention_pct": 75.8
+  },
+  {
+    "week_start": "2018-11-12",
+    "active": 134,
+    "retention_pct": 76.9
+  },
+  {
+    "week_start": "2018-11-19",
+    "active": 130,
+    "retention_pct": 70.8
+  }
+]

@@ -1,0 +1,52 @@
+[
+  {
+    "artist": "Kings Of Leon",
+    "plays": 1841,
+    "listeners": 199
+  },
+  {
+    "artist": "Coldplay",
+    "plays": 1813,
+    "listeners": 189
+  },
+  {
+    "artist": "Florence + The Machine",
+    "plays": 1236,
+    "listeners": 187
+  },
+  {
+    "artist": "Dwight Yoakam",
+    "plays": 1135,
+    "listeners": 189
+  },
+  {
+    "artist": "BjÃÂ¶rk",
+    "plays": 1133,
+    "listeners": 179
+  },
+  {
+    "artist": "The Black Keys",
+    "plays": 1125,
+    "listeners": 179
+  },
+  {
+    "artist": "Muse",
+    "plays": 1090,
+    "listeners": 166
+  },
+  {
+    "artist": "Justin Bieber",
+    "plays": 1044,
+    "listeners": 177
+  },
+  {
+    "artist": "Jack Johnson",
+    "plays": 1007,
+    "listeners": 173
+  },
+  {
+    "artist": "Eminem",
+    "plays": 953,
+    "listeners": 169
+  }
+]

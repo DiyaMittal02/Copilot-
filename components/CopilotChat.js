@@ -7,7 +7,7 @@ const SUGGESTIONS = [
   "What metrics should I track for subscription growth?",
   "Suggest an A/B test to improve listen time",
   "What is a good DAU/MAU ratio for audio apps?",
-  "How do I calculate LTV for PocketFM?",
+  "How do I calculate LTV for a streaming app?",
   "What are the top churn signals to watch?",
 ];
 
@@ -48,39 +48,21 @@ export default function CopilotChat({ kpiContext }) {
   const [messages, setMessages] = useState([
     {
       role: 'ai',
-      text: `👋 Hi! I'm your **AI Product Insights Copilot**, trained on PocketFM's audio streaming domain.\n\nI can help you:\n- 📊 Diagnose metric movements (retention drops, conversion dips)\n- 🎯 Suggest the right KPIs to track\n- 🧪 Design A/B experiments with proper frameworks\n- 🔍 Run root cause analysis on product issues\n- 📝 Explain any product metric in depth\n\nWhat would you like to explore today?`
+      text: `👋 Hi! I'm your **AI Product Insights Copilot**. I answer using your live dashboard metrics and domain context for audio-streaming products.\n\nI can help you:\n- 📊 Diagnose metric movements (retention drops, conversion dips)\n- 🎯 Suggest the right KPIs to track\n- 🧪 Design A/B experiments with proper frameworks\n- 🔍 Run root cause analysis on product issues\n- 📝 Explain any product metric in depth\n\nWhat would you like to explore today?`
     }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [apiKey, setApiKey] = useState('');
-  const [showApiInput, setShowApiInput] = useState(false);
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
-
-  useEffect(() => {
-    const stored = localStorage.getItem('groq_api_key');
-    if (stored) setApiKey(stored);
-  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const saveApiKey = (key) => {
-    localStorage.setItem('groq_api_key', key);
-    setApiKey(key);
-    setShowApiInput(false);
-  };
-
   const sendMessage = async (text) => {
     const userText = text || input.trim();
     if (!userText) return;
-
-    if (!apiKey) {
-      setShowApiInput(true);
-      return;
-    }
 
     setMessages(prev => [...prev, { role: 'user', text: userText }]);
     setInput('');
@@ -94,10 +76,13 @@ export default function CopilotChat({ kpiContext }) {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ apiKey, systemPrompt, message: userText }),
+        body: JSON.stringify({ systemPrompt, message: userText }),
       });
 
-      if (!response.ok) throw new Error('API error');
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error || 'API error');
+      }
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let fullText = '';
@@ -134,7 +119,7 @@ export default function CopilotChat({ kpiContext }) {
         const updated = [...prev];
         updated[updated.length - 1] = {
           role: 'ai',
-          text: '⚠️ Error connecting to Groq AI. Please check your API key and try again.',
+          text: `⚠️ ${err.message || 'Error connecting to the AI service.'}`,
           streaming: false
         };
         return updated;
@@ -153,39 +138,6 @@ export default function CopilotChat({ kpiContext }) {
 
   return (
     <div className="chat-container">
-      {!apiKey && (
-        <div className="settings-panel">
-          <div className="settings-panel-icon">🔑</div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '4px' }}>Groq API Key Required</div>
-            <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px' }}>
-              Get a free key at <a href="https://console.groq.com/keys" target="_blank" rel="noreferrer" style={{ color: '#818cf8' }}>console.groq.com</a>
-            </div>
-            <div className="api-input-group">
-              <input
-                className="form-input"
-                type="password"
-                placeholder="gsk_..."
-                id="api-key-input"
-                onKeyDown={e => { if (e.key === 'Enter') saveApiKey(e.target.value); }}
-              />
-              <button className="btn btn-primary" onClick={() => {
-                const val = document.getElementById('api-key-input').value;
-                if (val) saveApiKey(val);
-              }}>Connect</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {apiKey && (
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
-          <button className="btn btn-ghost" style={{ fontSize: '11px' }} onClick={() => { localStorage.removeItem('groq_api_key'); setApiKey(''); }}>
-            🔑 Change API Key
-          </button>
-        </div>
-      )}
-
       <div className="chat-messages">
         {messages.map((msg, i) => (
           <div key={i} className={`chat-message ${msg.role}`}>
@@ -218,18 +170,18 @@ export default function CopilotChat({ kpiContext }) {
             ref={textareaRef}
             className="chat-input"
             id="chat-input-field"
-            placeholder={apiKey ? "Ask about metrics, retention, A/B tests, cohort analysis..." : "Set your API key above to start chatting..."}
+            placeholder="Ask about metrics, retention, A/B tests, cohort analysis..."
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            disabled={loading || !apiKey}
+            disabled={loading}
             rows={1}
           />
           <button
             className="chat-send-btn"
             id="chat-send-btn"
             onClick={() => sendMessage()}
-            disabled={loading || !input.trim() || !apiKey}
+            disabled={loading || !input.trim()}
           >
             ➤
           </button>

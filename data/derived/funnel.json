@@ -1,0 +1,22 @@
+[
+  {
+    "stage": "Registered users",
+    "users": 225,
+    "pct": 100.0
+  },
+  {
+    "stage": "Played a song",
+    "users": 225,
+    "pct": 100.0
+  },
+  {
+    "stage": "Upgraded to paid",
+    "users": 131,
+    "pct": 58.2
+  },
+  {
+    "stage": "Retained (not churned)",
+    "users": 173,
+    "pct": 76.9
+  }
+]

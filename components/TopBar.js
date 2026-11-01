@@ -2,45 +2,34 @@
 import { useState, useEffect } from 'react';
 
 const pageTitles = {
-  '/dashboard':  { title: 'Dashboard',            subtitle: 'Real-time product metrics overview · PocketFM Audio Platform' },
-  '/retention':  { title: 'Retention Analytics',  subtitle: 'Daily retention curves, cohort heatmaps, drop-off analysis & benchmarks' },
-  '/audience':   { title: 'Audience Intelligence',subtitle: 'Listening DNA profiles, genre affinity, binge patterns & cross-show discovery flow' },
-  '/alerts':     { title: 'Churn Alerts & Feedback', subtitle: 'Real-time anomaly monitoring alerts & user feedback analysis' },
-  '/optimization': { title: 'Decision Support & Optimization', subtitle: 'Simulate coin pricing mechanics & optimize show release schedules' },
-  '/diagnostics': { title: 'Playback Diagnostics', subtitle: 'Analyze latency, audio buffering, and technical churn' },
-  '/copilot':    { title: 'AI Copilot',            subtitle: 'Ask anything about your product metrics — powered by Groq AI' },
-  '/metrics':    { title: 'Metric Library',        subtitle: '50+ product metrics with definitions, formulas & benchmarks' },
-  '/experiments':{ title: 'Experiment Planner',   subtitle: 'Design A/B tests with AI-generated hypotheses & success criteria' },
-  '/upload':     { title: 'Data Upload',           subtitle: 'Upload CSV data for instant AI-powered analysis' },
-  '/reports':    { title: 'Report Generator',      subtitle: 'One-click AI-generated weekly & monthly product reports' },
+  '/dashboard':  { title: 'Dashboard',           subtitle: 'Product metrics computed from the event log' },
+  '/churn':      { title: 'Churn Analysis',      subtitle: 'What predicts cancellation — significance tests & model' },
+  '/copilot':    { title: 'AI Copilot',          subtitle: 'Ask anything about your product metrics — powered by Groq AI' },
+  '/query':      { title: 'Ask with SQL',        subtitle: 'Plain-English questions → live SQL on the event log' },
+  '/metrics':    { title: 'Metric Library',      subtitle: 'Product metrics with definitions, formulas & benchmarks' },
+  '/experiments':{ title: 'Experiment Planner',  subtitle: 'Design A/B tests and size them with real statistics' },
+  '/upload':     { title: 'Data Upload',         subtitle: 'Upload CSV data for instant AI-powered analysis' },
+  '/reports':    { title: 'Report Generator',    subtitle: 'One-click AI-generated product reports' },
 };
 
 export default function TopBar({ pathname, onMenuClick }) {
-  const page = pageTitles[pathname] || { title: 'Product Insights', subtitle: 'PocketFM Copilot' };
+  const page = pageTitles[pathname] || { title: 'Cadence', subtitle: 'Streaming Analytics Copilot' };
   const now = new Date();
-  const dateStr = now.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  const dateStr = now.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
 
-  // Theme states
-  const [theme, setTheme] = useState('dark');
+  // Theme: lazy-init from localStorage (client only), then sync the DOM class.
+  const [theme, setTheme] = useState(() =>
+    (typeof window !== 'undefined' && localStorage.getItem('pfmt_theme')) || 'dark'
+  );
 
-  // Load initial theme from localStorage on client side
   useEffect(() => {
-    const savedTheme = localStorage.getItem('pfmt_theme') || 'dark';
-    setTheme(savedTheme);
-    if (savedTheme === 'light') {
-      document.documentElement.classList.add('light-theme');
-    }
-  }, []);
+    document.documentElement.classList.toggle('light-theme', theme === 'light');
+  }, [theme]);
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
     localStorage.setItem('pfmt_theme', newTheme);
-    if (newTheme === 'light') {
-      document.documentElement.classList.add('light-theme');
-    } else {
-      document.documentElement.classList.remove('light-theme');
-    }
   };
 
   return (
@@ -65,6 +54,7 @@ export default function TopBar({ pathname, onMenuClick }) {
         {/* Theme Toggle Button */}
         <button
           onClick={toggleTheme}
+          suppressHydrationWarning
           aria-label="Toggle theme mode"
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',

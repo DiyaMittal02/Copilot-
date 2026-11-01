@@ -1,0 +1,67 @@
+{
+  "feature_tests": [
+    {
+      "feature": "ads_per_100",
+      "churned_mean": 5.87,
+      "retained_mean": 3.58,
+      "lift_pct": 64.0,
+      "t_stat": 2.45,
+      "p_value": 0.017,
+      "significant_05": true
+    },
+    {
+      "feature": "dislikes_per_100",
+      "churned_mean": 1.75,
+      "retained_mean": 1.02,
+      "lift_pct": 72.0,
+      "t_stat": 3.09,
+      "p_value": 0.003,
+      "significant_05": true
+    },
+    {
+      "feature": "likes_per_100",
+      "churned_mean": 5.36,
+      "retained_mean": 5.51,
+      "lift_pct": -3.0,
+      "t_stat": -0.31,
+      "p_value": 0.7546,
+      "significant_05": false
+    },
+    {
+      "feature": "add_friend",
+      "churned_mean": 12.23,
+      "retained_mean": 21.05,
+      "lift_pct": -42.0,
+      "t_stat": -3.84,
+      "p_value": 0.0002,
+      "significant_05": true
+    },
+    {
+      "feature": "sessions",
+      "churned_mean": 10.33,
+      "retained_mean": 15.25,
+      "lift_pct": -32.0,
+      "t_stat": -2.9,
+      "p_value": 0.0042,
+      "significant_05": true
+    },
+    {
+      "feature": "songs",
+      "churned_mean": 699.88,
+      "retained_mean": 1108.17,
+      "lift_pct": -37.0,
+      "t_stat": -3.05,
+      "p_value": 0.0027,
+      "significant_05": true
+    }
+  ],
+  "paid_vs_free": {
+    "paid_churn_rate": 21.8,
+    "free_churn_rate": 26.7,
+    "z_stat": -0.76,
+    "p_value": 0.4455,
+    "significant_05": false
+  },
+  "n_churned": 52,
+  "n_retained": 173
+}

@@ -1,0 +1,12 @@
+{
+  "total_users": 225,
+  "churn_rate_pct": 23.1,
+  "paid_users": 165,
+  "avg_songs_per_user": 1014,
+  "total_plays": 228108,
+  "upgrades": 131,
+  "downgrades": 49,
+  "dau_avg": 50,
+  "dau_peak": 70,
+  "paid_share_pct": 73.3
+}

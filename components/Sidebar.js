@@ -5,12 +5,9 @@ import { useEffect } from 'react';
 
 const navItems = [
   { href: '/dashboard', icon: '📊', label: 'Dashboard' },
-  { href: '/retention', icon: '📈', label: 'Retention' },
-  { href: '/audience', icon: '🧬', label: 'Audience Intel' },
-  { href: '/alerts', icon: '🚨', label: 'Churn Alerts' },
-  { href: '/optimization', icon: '🎚️', label: 'Decision Tools' },
-  { href: '/diagnostics', icon: '🛠️', label: 'Diagnostics' },
+  { href: '/churn', icon: '📉', label: 'Churn Analysis' },
   { href: '/copilot', icon: '🤖', label: 'AI Copilot' },
+  { href: '/query', icon: '⌨️', label: 'Ask with SQL' },
   { href: '/metrics', icon: '📚', label: 'Metric Library' },
   { href: '/experiments', icon: '🧪', label: 'Experiment Planner' },
   { href: '/upload', icon: '📁', label: 'Data Upload' },
@@ -21,7 +18,7 @@ export default function Sidebar({ isOpen, onClose }) {
   const pathname = usePathname();
 
   // Close sidebar on route change (mobile)
-  useEffect(() => { onClose?.(); }, [pathname]);
+  useEffect(() => { onClose?.(); }, [pathname, onClose]);
 
   // Close on Escape key
   useEffect(() => {
@@ -44,8 +41,8 @@ export default function Sidebar({ isOpen, onClose }) {
         <div className="sidebar-logo">
           <div className="sidebar-logo-icon">🎯</div>
           <div style={{ flex: 1 }}>
-            <div className="sidebar-logo-text">PocketFM</div>
-            <div className="sidebar-logo-sub">Product Insights Copilot</div>
+            <div className="sidebar-logo-text">Cadence</div>
+            <div className="sidebar-logo-sub">Streaming Analytics Copilot</div>
           </div>
           {/* Close button — mobile only */}
           <button

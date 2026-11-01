@@ -1,16 +1,17 @@
 {
-  "name": "newprojecthopefully",
+  "name": "product-insights-copilot",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node --test",
+    "build:metrics": "python analysis/build_metrics.py && python analysis/churn_analysis.py"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
-    "groq-sdk": "^1.3.0",
+    "@duckdb/node-api": "^2.0.0-r.1",
     "lucide-react": "^1.21.0",
     "next": "16.2.9",
     "papaparse": "^5.5.4",

@@ -57,8 +57,6 @@ export default function UploadPage() {
 
   const analyzeWithAI = async () => {
     if (!parsed) return;
-    const apiKey = localStorage.getItem('groq_api_key');
-    if (!apiKey) { alert('Please add your Groq API key in the AI Copilot page first.'); return; }
 
     setLoading(true);
     const columns = parsed.meta.fields || [];
@@ -68,7 +66,7 @@ export default function UploadPage() {
     const res = await fetch('/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ apiKey, prompt }),
+      body: JSON.stringify({ prompt }),
     });
     const data = await res.json();
     setAnalysis(data.text || data.error);

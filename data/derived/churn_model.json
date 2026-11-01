@@ -1,0 +1,33 @@
+{
+  "cv_auc_mean": 0.665,
+  "cv_auc_std": 0.086,
+  "n_users": 225,
+  "features": [
+    {
+      "feature": "dislikes_per_100",
+      "coef": 0.609,
+      "odds_ratio": 1.84
+    },
+    {
+      "feature": "add_friend",
+      "coef": -0.35,
+      "odds_ratio": 0.7
+    },
+    {
+      "feature": "sessions",
+      "coef": -0.18,
+      "odds_ratio": 0.83
+    },
+    {
+      "feature": "ads_per_100",
+      "coef": 0.164,
+      "odds_ratio": 1.18
+    },
+    {
+      "feature": "likes_per_100",
+      "coef": -0.006,
+      "odds_ratio": 0.99
+    }
+  ],
+  "note": "Odds ratio = multiplicative change in churn odds per +1 SD. n=225, so treat as directional, not production-grade."
+}

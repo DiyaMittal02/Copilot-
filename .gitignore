@@ -32,6 +32,15 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+# raw dataset (large; reproduce with: see data/README.md)
+/data/raw/
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
 
 # vercel
 .vercel

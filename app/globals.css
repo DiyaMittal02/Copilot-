@@ -816,7 +816,7 @@ body {
   padding: 7px 10px;
 }
 
-.metric-pocketfm-tip {
+.metric-tip {
   display: flex;
   align-items: flex-start;
   gap: 6px;

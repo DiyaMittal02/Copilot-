@@ -2,6 +2,83 @@
 import { useState } from 'react';
 import AppShell from '@/components/AppShell';
 import { buildExperimentPrompt } from '@/lib/prompts';
+import { sampleSizePerArm, twoProportionZTest } from '@/lib/stats';
+
+function ABCalculator() {
+  const [baseline, setBaseline] = useState(26.7);
+  const [target, setTarget] = useState(21.7);
+  const [power, setPower] = useState(80);
+
+  let size = null, err = null;
+  try {
+    if (baseline > 0 && target > 0 && baseline !== target && baseline < 100 && target < 100) {
+      size = sampleSizePerArm(baseline / 100, target / 100, 0.05, power / 100);
+    }
+  } catch (e) { err = e.message; }
+
+  const [c1, setC1] = useState(52);
+  const [n1, setN1] = useState(225);
+  const [c2, setC2] = useState(40);
+  const [n2, setN2] = useState(225);
+  let sig = null;
+  try {
+    if (n1 > 0 && n2 > 0) sig = twoProportionZTest(c1, n1, c2, n2);
+  } catch { /* ignore */ }
+
+  const field = (label, value, setter, suffix) => (
+    <label style={{ fontSize: 11, color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: 4 }}>
+      {label}
+      <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+        <input className="form-input" type="number" value={value}
+          onChange={(e) => setter(parseFloat(e.target.value))} style={{ width: 90 }} />
+        {suffix && <span>{suffix}</span>}
+      </span>
+    </label>
+  );
+
+  return (
+    <div className="card" style={{ marginBottom: 20 }}>
+      <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>🧮 A/B Test Calculator</div>
+      <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 14 }}>
+        Exact math from <code>lib/stats.js</code> (validated by <code>npm test</code>) — no LLM guesswork.
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24 }}>
+        {/* sample size */}
+        <div>
+          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>Required sample size</div>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            {field('Baseline rate', baseline, setBaseline, '%')}
+            {field('Target rate', target, setTarget, '%')}
+            {field('Power', power, setPower, '%')}
+          </div>
+          <div style={{ marginTop: 10, fontSize: 13, color: 'var(--text-primary)' }}>
+            {err ? <span style={{ color: '#fca5a5' }}>{err}</span> :
+              size != null ? <>≈ <strong style={{ color: '#a5b4fc' }}>{size.toLocaleString()}</strong> users per arm (α=0.05)</> :
+              'Enter two different rates'}
+          </div>
+        </div>
+        {/* significance */}
+        <div>
+          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>Is a result significant?</div>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            {field('Conv. A', c1, setC1)}
+            {field('N A', n1, setN1)}
+            {field('Conv. B', c2, setC2)}
+            {field('N B', n2, setN2)}
+          </div>
+          <div style={{ marginTop: 10, fontSize: 13, color: 'var(--text-primary)' }}>
+            {sig ? <>
+              {(sig.p1 * 100).toFixed(1)}% vs {(sig.p2 * 100).toFixed(1)}% · p = <strong>{sig.pValue.toFixed(4)}</strong>{' '}
+              <span style={{ color: sig.significant ? '#10b981' : '#f59e0b' }}>
+                {sig.significant ? '✅ significant' : '— not significant'}
+              </span>
+            </> : 'Enter counts'}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function MarkdownText({ text }) {
   if (!text) return null;
@@ -57,8 +134,6 @@ export default function ExperimentsPage() {
   const [savedExperiments, setSavedExperiments] = useState([]);
 
   const handleGenerate = async () => {
-    const apiKey = localStorage.getItem('groq_api_key');
-    if (!apiKey) { alert('Please add your Groq API key in the AI Copilot page first.'); return; }
     if (!form.feature || !form.hypothesis || !form.targetMetric) { alert('Please fill in Feature, Hypothesis, and Target Metric.'); return; }
 
     setLoading(true);
@@ -67,7 +142,7 @@ export default function ExperimentsPage() {
     const res = await fetch('/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ apiKey, prompt }),
+      body: JSON.stringify({ prompt }),
     });
     const data = await res.json();
     setResult(data.text || data.error);
@@ -88,6 +163,7 @@ export default function ExperimentsPage() {
   return (
     <AppShell>
       <main className="page-body">
+          <ABCalculator />
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
             {/* Form */}
             <div>

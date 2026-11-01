@@ -21,9 +21,11 @@ export default function KPICard({ label, value, change, unit, trend, color }) {
       <div className="kpi-label">{label}</div>
       <div className="kpi-value">{formatValue(value)}</div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span className={`kpi-change ${isPositive ? 'up' : 'down'}`}>
-          {isUp ? '↑' : '↓'} {Math.abs(change)}%
-        </span>
+        {change != null && (
+          <span className={`kpi-change ${isPositive ? 'up' : 'down'}`}>
+            {isUp ? '↑' : '↓'} {Math.abs(change)}%
+          </span>
+        )}
         <span className="kpi-unit">{unit}</span>
       </div>
     </div>

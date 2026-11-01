@@ -1,0 +1,12 @@
+[
+  {
+    "gender": "F",
+    "users": 104,
+    "churn_rate_pct": 19.2
+  },
+  {
+    "gender": "M",
+    "users": 121,
+    "churn_rate_pct": 26.4
+  }
+]

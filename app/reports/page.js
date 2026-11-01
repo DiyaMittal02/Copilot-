@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import AppShell from '@/components/AppShell';
 import { buildReportPrompt } from '@/lib/prompts';
-import { kpiData } from '@/lib/mockData';
+import { kpiContext } from '@/lib/metricsData';
 
 function MarkdownText({ text }) {
   if (!text) return null;
@@ -42,27 +42,10 @@ export default function ReportsPage() {
   const [loading, setLoading] = useState(false);
 
   const generateReport = async () => {
-    const apiKey = localStorage.getItem('groq_api_key');
-    if (!apiKey) { alert('Please add your Groq API key in the AI Copilot page first.'); return; }
-
     setLoading(true);
     setReport('');
 
-    const data = {
-      dau: kpiData.dau.value,
-      dauChange: kpiData.dau.change,
-      mau: kpiData.mau.value,
-      mauChange: kpiData.mau.change,
-      d7Retention: kpiData.d7Retention.value,
-      d30Retention: kpiData.d30Retention.value,
-      premiumConversion: kpiData.premiumConversion.value,
-      avgListenTime: kpiData.avgListenTime.value,
-      churnRate: kpiData.churnRate.value,
-      arpu: kpiData.arpu.value,
-      episodeCompletionRate: kpiData.episodeCompletionRate.value,
-    };
-
-    const basePrompt = buildReportPrompt(data);
+    const basePrompt = buildReportPrompt(kpiContext);
     const typeAddendum = reportType === 'monthly'
       ? '\n\nThis is a MONTHLY report. Focus on month-over-month trends, cohort analysis, and strategic 30-60-90 day priorities.'
       : reportType === 'exec'
@@ -72,7 +55,7 @@ export default function ReportsPage() {
     const res = await fetch('/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ apiKey, prompt: basePrompt + typeAddendum }),
+      body: JSON.stringify({ prompt: basePrompt + typeAddendum }),
     });
     const resData = await res.json();
     setReport(resData.text || resData.error);
@@ -127,19 +110,17 @@ export default function ReportsPage() {
           <div className="card" style={{ marginBottom: 20, display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center' }}>
             <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>📊 REPORT DATA SOURCE</div>
             {[
-              { k: 'DAU', v: '2.85M', c: '+4.2%', ok: true },
-              { k: 'MAU', v: '18.3M', c: '+7.8%', ok: true },
-              { k: 'D7 Retention', v: '26.1%', c: '-0.8%', ok: false },
-              { k: 'D30 Retention', v: '14.2%', c: '+0.3%', ok: true },
-              { k: 'Conversion', v: '7.4%', c: '+0.9%', ok: true },
-              { k: 'Churn', v: '3.2%/mo', c: '-0.4%', ok: true },
-              { k: 'Listen Time', v: '43.7 min', c: '-2.1%', ok: false },
-              { k: 'ARPU', v: '₹84.5', c: '+5.1%', ok: true },
+              { k: 'Total Users', v: kpiContext.totalUsers.toLocaleString() },
+              { k: 'Churn Rate', v: `${kpiContext.churnRatePct}%` },
+              { k: 'Paid Share', v: `${kpiContext.paidSharePct}%` },
+              { k: 'Avg DAU', v: `${kpiContext.avgDau}` },
+              { k: 'Peak DAU', v: `${kpiContext.peakDau}` },
+              { k: 'Weekly Retention', v: `${kpiContext.avgWeeklyRetentionPct}%` },
+              { k: 'Upgrades', v: kpiContext.upgrades.toLocaleString() },
             ].map((m, i) => (
               <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{m.k}</span>
                 <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{m.v}</span>
-                <span style={{ fontSize: 10, color: m.ok ? '#10b981' : '#ef4444' }}>{m.c}</span>
               </div>
             ))}
           </div>

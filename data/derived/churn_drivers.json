@@ -1,0 +1,32 @@
+[
+  {
+    "metric": "Ads per 100 songs",
+    "churned": 2.66,
+    "retained": 1.55,
+    "lift_pct": 72.0
+  },
+  {
+    "metric": "Add-Friend actions",
+    "churned": 12.23,
+    "retained": 21.05,
+    "lift_pct": -42.0
+  },
+  {
+    "metric": "Thumbs-Up actions",
+    "churned": 35.75,
+    "retained": 61.8,
+    "lift_pct": -42.0
+  },
+  {
+    "metric": "Sessions",
+    "churned": 10.33,
+    "retained": 15.25,
+    "lift_pct": -32.0
+  },
+  {
+    "metric": "Dislikes per 100 songs",
+    "churned": 1.36,
+    "retained": 1.07,
+    "lift_pct": 27.0
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "segment": "Retained",
+    "users": 173,
+    "avg_songs": 1108.0,
+    "avg_sessions": 15.3,
+    "avg_thumbs_up": 61.8,
+    "avg_thumbs_down": 11.8,
+    "avg_add_friend": 21.0,
+    "dislikes_per_100": 1.07,
+    "ads_per_100": 1.55,
+    "avg_tenure_days": 47.0
+  },
+  {
+    "segment": "Churned",
+    "users": 52,
+    "avg_songs": 700.0,
+    "avg_sessions": 10.3,
+    "avg_thumbs_up": 35.8,
+    "avg_thumbs_down": 9.5,
+    "avg_add_friend": 12.2,
+    "dislikes_per_100": 1.36,
+    "ads_per_100": 2.66,
+    "avg_tenure_days": 23.5
+  }
+]

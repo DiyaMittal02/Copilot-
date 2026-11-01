@@ -1,78 +1,100 @@
-# 🎯 Product Insights Copilot Terminal
+# 🎵 Cadence — Streaming Analytics Copilot
 
-An advanced, responsive, and decision-driven product analytics dashboard built to monitor, model, and optimize user retention, coin-monetization pricing, release schedules, and audio playback latency profiles.
+A self-serve product-analytics tool for a music/audio streaming service. Anyone
+in the org — PM, marketing, content — can see how retention, engagement and
+churn are doing, **ask the AI copilot *why* a metric moved**, and **write a basic
+query in plain English** instead of waiting on an analyst for every small ask.
 
----
+Every number is **computed from a real event log** (the public
+[Sparkify](https://udacity-dsnd.s3.amazonaws.com/sparkify/) dataset — 225 users,
+286,500 events, Oct–Dec 2018). Nothing is hand-typed or faked.
 
-## 📸 Screenshots
-
-### Executive Dashboard
-![Executive Dashboard](/public/screenshots/dashboard.png)
-
-### Retention Curves & Cohort Heatmap
-![Retention Analytics](/public/screenshots/retention.png)
-
-### Audience Listening DNA & Crossovers
-![Audience DNA](/public/screenshots/audience.png)
-
-### Decision Support Tools
-![Decision Tools](/public/screenshots/optimization.png)
+> **Live demo:** _add your Vercel/host URL here_ · **AI needs** a free key from your chosen provider (default [Google Gemini](https://aistudio.google.com/apikey))
 
 ---
 
-## 🚀 Key Decision Support Modules
+## What it does
 
-### 1. 📈 Retention Analytics & Cohort Heatmaps
-Descriptive cohort and daily retention decay analysis (D0–D30) mapping the user lifespan.
-*   **Worked Formulas**: Explains step-by-step classic vs. rolling retention.
-*   **Cohort Heatmap Grid**: Visualizes monthly retention milestones (D1 to D30) with density scaling.
-*   **Show-Level Episode Funnel**: Select individual shows (e.g. *Ishq Mein Marjawan*, *Crime Patrol Stories*) to inspect episode-by-episode drop-offs and narrational exit triggers.
-*   **Daily Cohort Journey**: Step-by-step cohort walkthroughs (Installs → Onboarded → Played >5m → Played >30m → Day 1 Retained → Day 30 Premium Convert).
+| Module | What it is |
+|---|---|
+| 📊 **Dashboard** | DAU, weekly retention, funnel, top artists, churn signals — all computed from the event log |
+| 📉 **Churn Analysis** | Significance tests (Welch's t-test) + a logistic-regression model explaining *why* users cancel |
+| 🤖 **AI Copilot** | Chat grounded on the live metrics; diagnoses metric movements with structured RCA. Pluggable LLM (Gemini/Groq/OpenAI/Ollama) |
+| ⌨️ **Ask with SQL** | Plain-English question → **live, guarded SQL** on the event log → answer + the SQL + the data table |
+| 🧪 **Experiment Planner** | A real A/B **sample-size + significance calculator** (not LLM guesswork) + an AI test-plan generator |
+| 📚 **Metric Library** | Reference definitions, formulas and benchmarks for 25+ product metrics |
+| 📁 **Data Upload** | Drop a CSV → AI suggests analyses, flags data-quality issues, writes SQL |
 
-### 2. 🧬 Audience Intelligence & Listening DNA
-Deep behavioral archetype analysis transforming numbers into product personas.
-*   **Genre DNA Radar Charts**: Dynamic mapping of genre affinity per user segment.
-*   **24-Hour Listening Clocks**: Radial clock heatmaps highlighting peak session times.
-*   **Binge Metrics**: Episode count ratios, session lengths, and weekly exploration volumes.
-*   **🌊 Cross-Show Discovery Flow**: Custom SVG Sankey flow visualization tracking where listeners navigate after dropping or completing a show.
+## The analysis (start here if you're evaluating the analytics)
 
-### 3. 🚨 Churn Alerts & Sentiment Monitors
-Proactive triggers mapping technical and behavioral thresholds directly to remedial action plans.
-*   **Custom Threshold Configurator**: Set active metrics monitors to alert you when target averages drop.
-*   **Sentiment Keyword Cloud**: Extracts app store review patterns to contrast high retention drivers against paywall friction.
+This repo is also a worked **product-analyst case study**:
 
-### 4. 🎚️ Coin Pricing & Release Schedulers
-Decision-support modeling to forecast changes in product pricing and push delivery.
-*   **Friction Pricing Simulator**: Sliders to model coin pricing per episode, free key limits, and ad bonuses to graph changes in conversion rates, ARPU, and LTV.
-*   **Show Release Optimizer**: Align release batches with target segment listening routines to maximize organic lift.
+- **[analysis/FINDINGS.md](analysis/FINDINGS.md)** — why users churn: method, significance tests, a churn model (ROC-AUC 0.665), and limitations.
+- **[analysis/EXEC_MEMO.md](analysis/EXEC_MEMO.md)** — a one-page recommendation + a fully specified A/B test (hypothesis, guardrails, ~1,151 users/arm, decision rule).
 
----
+**Headline:** churn is 23.1%. Friction (ads +64%, dislikes +72% per 100 songs) and
+weak social connection (Add-Friend −42%, p=0.0002) predict it — **not** price
+(paid vs free churn is not significant, p=0.45).
 
-## 🛠️ Playback Buffer & Network Diagnostics
-Visual correlation metrics highlighting how playback buffering directly drives Day 1 uninstalls.
-*   **Bitrate Mode Simulator**: Model switching streams from standard 128kbps to optimized 64kbps HE-AAC to reduce buffering ratios and improve rural network retention.
-*   **Regional Anomalies List**: Operator scope flags identifying latency spikes across network circles.
+## Architecture
 
----
+```
+raw event log (JSON, 128 MB, gitignored)
+      │  analysis/build_metrics.py + churn_analysis.py   (DuckDB SQL + scipy/sklearn)
+      ▼
+data/derived/*.json      ← dashboard reads these (computed aggregates)
+data/derived/events.parquet (5.7 MB, committed)
+      │
+      ▼
+Next.js App Router
+  ├─ pages read the derived JSON (lib/metricsData.js)
+  ├─ /api/chat, /api/generate → lib/llm.js adapter → Gemini/Groq/OpenAI/Ollama (key held server-side)
+  └─ /api/query → text-to-SQL → lib/sqlGuard.js (SELECT-only, LIMIT, no writes) → DuckDB over the parquet
+```
 
-## 💻 Tech Stack
-*   **Framework**: Next.js 16 (App Router)
-*   **Styling**: Modern, fluid variables system featuring responsive side-drawers and full Light & Dark mode support.
-*   **Visualizations**: Recharts engine + custom SVG charts.
-*   **AI Backend Integration**: Groq SDK + Llama 3.3 70B model logic.
+**Text-to-SQL is guarded:** generated SQL must be a single `SELECT`/`WITH`, no
+DDL/DML, and is row-capped — see [lib/sqlGuard.js](lib/sqlGuard.js) (unit-tested).
 
----
+## Tech stack
+- **Framework:** Next.js 16 (App Router) · React 19
+- **Data/engine:** DuckDB (Python pipeline + `@duckdb/node-api` at runtime), Parquet
+- **Analysis:** Python · pandas · scipy · scikit-learn
+- **AI:** pluggable provider via `lib/llm.js` — Gemini (default) / Groq / OpenAI / Ollama, server-side key, streaming
+- **Charts:** Recharts
 
-## ⚙️ Getting Started
+## Setup
 
-First, install the project dependencies:
 ```bash
+# 1. install
 npm install
+
+# 2. configure the AI provider (default: Gemini)
+cp .env.example .env.local      # set LLM_PROVIDER + the matching key
+
+# 3. get the data + build the computed metrics (see analysis/README.md)
+mkdir -p data/raw
+curl -L -o data/raw/mini_sparkify_event_data.json \
+  https://udacity-dsnd.s3.amazonaws.com/sparkify/mini_sparkify_event_data.json
+python -m pip install duckdb pandas scipy scikit-learn
+npm run build:metrics
+
+# 4. run
+npm run dev        # http://localhost:3000
 ```
 
-Start the local development server:
+The committed `data/derived/` already contains the aggregates + Parquet, so the
+app and the text-to-SQL feature **work out of the box** — step 3 only re-derives them.
+
+## Tests
 ```bash
-npm run dev
+npm test      # node --test — statistics (lib/stats.js) + SQL guardrails (lib/sqlGuard.js)
 ```
 
-Open **[http://localhost:3000](http://localhost:3000)** to explore the Product Insights Terminal.
+## Honesty note
+This is a portfolio project on a **public dataset**. It's a 225-user sample, so
+findings are explicitly treated as *directional* and every significance test
+reports its n. There are no fabricated "millions of users" — the point is to show
+the method on real data.
+
+## License
+[MIT](LICENSE) © 2026 Diya Mittal

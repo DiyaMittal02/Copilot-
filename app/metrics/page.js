@@ -33,18 +33,17 @@ function formatInline(text) {
     .replace(/`(.+?)`/g, '<code>$1</code>');
 }
 
-function MetricModal({ metric, onClose, apiKey }) {
+function MetricModal({ metric, onClose }) {
   const [aiExplanation, setAiExplanation] = useState('');
   const [loading, setLoading] = useState(false);
 
   const getAIExplanation = async () => {
-    if (!apiKey) { alert('Add your Groq API key in the AI Copilot section first.'); return; }
     setLoading(true);
     const prompt = buildMetricExplainerPrompt(metric);
     const res = await fetch('/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ apiKey, prompt }),
+      body: JSON.stringify({ prompt }),
     });
     const data = await res.json();
     setAiExplanation(data.text || data.error);
@@ -94,10 +93,10 @@ function MetricModal({ metric, onClose, apiKey }) {
         </div>
 
         <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>POCKETFM TIP</div>
-          <div className="metric-pocketfm-tip">
+          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>ANALYST TIP</div>
+          <div className="metric-tip">
             <span>🎯</span>
-            <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{metric.pocketfmTip}</span>
+            <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{metric.tip}</span>
           </div>
         </div>
 
@@ -122,7 +121,6 @@ export default function MetricsPage() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [search, setSearch] = useState('');
   const [selectedMetric, setSelectedMetric] = useState(null);
-  const apiKey = typeof window !== 'undefined' ? localStorage.getItem('groq_api_key') : '';
 
   const filtered = metrics.filter(m => {
     const matchCategory = activeCategory === 'All' || m.category === activeCategory;
@@ -178,9 +176,9 @@ export default function MetricsPage() {
                   <span>📊</span>
                   <span>{metric.benchmark}</span>
                 </div>
-                <div className="metric-pocketfm-tip">
+                <div className="metric-tip">
                   <span>🎯</span>
-                  <span>{metric.pocketfmTip}</span>
+                  <span>{metric.tip}</span>
                 </div>
                 <div style={{ marginTop: 10, fontSize: 11, color: '#818cf8', fontWeight: 500 }}>
                   Click for AI deep dive →
@@ -198,7 +196,7 @@ export default function MetricsPage() {
           )}
         </main>
       {selectedMetric && (
-        <MetricModal metric={selectedMetric} onClose={() => setSelectedMetric(null)} apiKey={apiKey} />
+        <MetricModal metric={selectedMetric} onClose={() => setSelectedMetric(null)} />
       )}
     </AppShell>
   );
